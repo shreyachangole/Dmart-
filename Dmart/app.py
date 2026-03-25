@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, request
-from products import PRODUCTS, COUPONS, STORE
+from Dmart.products import PRODUCTS, COUPONS, STORE
 import uuid, math, smtplib, os, io
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
