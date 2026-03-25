@@ -20,9 +20,8 @@ sessions = {}
 #   PowerShell  : $env:EMAIL_USER="you@gmail.com"; $env:EMAIL_PASS="app_password"
 # Use a Gmail App Password (not your regular password).
 # Generate at: https://myaccount.google.com/apppasswords
-
-EMAIL_USER      = os.environ.get('EMAIL_USER', 'sakshimore44422@gmail.com')
-EMAIL_PASS      = os.environ.get('EMAIL_PASS', 'vzom zvzn qrys hxna')
+EMAIL_USER = os.environ.get('EMAIL_USER')
+EMAIL_PASS = os.environ.get('EMAIL_PASS')
 EMAIL_FROM_NAME = 'D-mart Smart Billing'
 
 

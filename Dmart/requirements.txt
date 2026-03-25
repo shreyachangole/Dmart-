@@ -1,4 +1,3 @@
-pip install flask
-pip install secure-smtplib
-pip install reportlab
-vzom zvzn qrys hxna
+flask
+secure-smtplib
+reportlab
