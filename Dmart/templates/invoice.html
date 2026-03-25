@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Invoice {{ invoice_no }} — D-mart</title>
+  <link rel="stylesheet" href="/static/css/invoice.css"/>
+</head>
+<body>
+<div class="page-bg">
+<div class="card">
+
+  <div class="card-body">
+
+    <!-- Action bar (hidden on print) -->
+    <div class="action-bar no-print">
+      <a href="#" class="btn-new" onclick="startNewSession(event)">🏠 New Session</a>
+      <div class="action-right">
+
+        <!-- Email send button -->
+        <div class="email-action-wrap" id="email-action-wrap">
+          <button class="btn-send-email" id="btn-send-email" onclick="sendInvoiceEmail()">
+            <span class="btn-email-icon">📧</span>
+            <span id="btn-email-text">Send Invoice to Email</span>
+          </button>
+          <span class="email-target">{{ customer.email }}</span>
+        </div>
+
+        <!-- Status shown after attempt -->
+        <div class="email-status-wrap" id="email-status-wrap" style="display:none">
+          <span class="email-status-badge" id="email-status-badge"></span>
+        </div>
+
+        <button class="btn-print" onclick="window.print()">🖨️ Print Invoice</button>
+      </div>
+    </div>
+
+    <!-- Invoice paper -->
+    <div class="invoice-paper">
+
+      <div class="inv-header">
+        <div class="inv-store">
+          <div class="inv-logo">D-mart</div>
+          <div class="inv-store-addr">
+            {{ store.address }}<br/>
+            📞 {{ store.phone }} &nbsp;|&nbsp; GSTIN: {{ store.gstin }}
+          </div>
+        </div>
+        <div class="inv-meta">
+          <div class="inv-badge">TAX INVOICE</div>
+          <div class="inv-number">{{ invoice_no }}</div>
+          <div class="inv-date" id="inv-date"></div>
+          <div class="inv-paid-badge">✅ PAID</div>
+        </div>
+      </div>
+
+      <div class="customer-band">
+        <div class="cust-cell">
+          <div class="cust-label">Bill To</div>
+          <div class="cust-name">{{ customer.name }}</div>
+          <div class="cust-sub">
+            📞 {{ customer.phone }}<br/>
+            ✉️ {{ customer.email }}
+            {% if customer.address %}<br/>📍 {{ customer.address }}{% endif %}
+          </div>
+        </div>
+        <div class="cust-cell">
+          <div class="cust-label">Payment</div>
+          <div class="cust-name">UPI</div>
+          <div class="cust-sub">Status: Paid<br/>Mode: UPI QR Code</div>
+        </div>
+      </div>
+
+      <table class="inv-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Product</th>
+            <th>Code</th>
+            <th>Qty</th>
+            <th>Unit Price</th>
+            <th>GST 5%</th>
+            <th class="right">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in cart %}
+          <tr>
+            <td class="center">{{ loop.index }}</td>
+            <td>
+              <div class="prod-name">{{ item.name }}</div>
+              <div class="prod-brand">{{ item.brand }}</div>
+            </td>
+            <td class="mono center">{{ item.code }}</td>
+            <td class="center">{{ item.quantity }}</td>
+            <td class="right">&#x20B9;{{ "%.2f"|format(item.price) }}</td>
+            <td class="right">&#x20B9;{{ "%.2f"|format(item.tax_amount) }}</td>
+            <td class="right bold">&#x20B9;{{ "%.2f"|format(item.total + item.tax_amount) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="totals-section">
+        <div class="totals-left">
+          <p class="thanks">Thank you for shopping at D-mart!</p>
+          <p class="terms">This is a computer generated invoice. No signature required.</p>
+          {% if coupon %}
+          <div class="coupon-applied-tag">🏷️ Coupon {{ coupon.code }} applied — {{ coupon.desc }}</div>
+          {% endif %}
+        </div>
+        <div class="totals-right">
+          <div class="tot-row"><span>Subtotal (excl. GST)</span><span>&#x20B9;{{ "%.2f"|format(subtotal) }}</span></div>
+          <div class="tot-row"><span>GST @ 5%</span><span>&#x20B9;{{ "%.2f"|format(gst) }}</span></div>
+          {% if discount > 0 %}
+          <div class="tot-row discount">
+            <span>Coupon Discount</span>
+            <span>-&#x20B9;{{ "%.2f"|format(discount) }}</span>
+          </div>
+          {% endif %}
+          <div class="tot-divider"></div>
+          <div class="tot-row grand"><span>Total Paid</span><span>&#x20B9;{{ "%.2f"|format(grand) }}</span></div>
+        </div>
+      </div>
+
+      <div class="inv-footer">
+        <span>{{ store.name }} &middot; {{ store.address }}</span>
+      </div>
+
+    </div><!-- end invoice-paper -->
+
+  </div><!-- end card-body -->
+</div>
+</div>
+
+<script src="/static/js/navigation.js"></script>
+<script>
+  const SESSION_ID = "{{ session_id }}";
+
+  // Set date
+  document.getElementById('inv-date').textContent =
+    new Date().toLocaleDateString('en-IN', {
+      day:'2-digit', month:'long', year:'numeric',
+      hour:'2-digit', minute:'2-digit'
+    });
+
+  // Clear history stack so back goes to main
+  window.history.replaceState({ page: 'main' }, '', '/');
+  window.history.pushState({ page: 'invoice' }, '', window.location.href);
+
+  function startNewSession(e) {
+    e.preventDefault();
+    window.location.replace('/');
+  }
+
+  window.addEventListener('popstate', function(e) {
+    if (e.state && e.state.page === 'main') {
+      window.location.replace('/');
+    }
+  });
+
+  // ── Send Invoice Email ──────────────────────────────────────────
+  function sendInvoiceEmail() {
+    const btn         = document.getElementById('btn-send-email');
+    const btnText     = document.getElementById('btn-email-text');
+    const btnIcon     = document.querySelector('.btn-email-icon');
+    const actionWrap  = document.getElementById('email-action-wrap');
+    const statusWrap  = document.getElementById('email-status-wrap');
+    const statusBadge = document.getElementById('email-status-badge');
+
+    btn.disabled        = true;
+    btn.classList.add('sending');
+    btnIcon.textContent = '⏳';
+    btnText.textContent = 'Sending…';
+
+    fetch('/api/send-invoice-email', {
+      method  : 'POST',
+      headers : { 'Content-Type': 'application/json' },
+      body    : JSON.stringify({ session_id: SESSION_ID }),
+    })
+    .then(r => r.json())
+    .then(data => {
+      actionWrap.style.display = 'none';
+      statusWrap.style.display = '';
+
+      if (data.success) {
+        statusBadge.className = 'email-status-badge success';
+        statusBadge.innerHTML = '✅ Invoice sent to <strong>' +
+                                 document.querySelector('.email-target').textContent + '</strong>';
+      } else {
+        statusBadge.className = 'email-status-badge error';
+        statusBadge.innerHTML = '❌ ' + (data.message || 'Failed to send. Try again.');
+
+        const retryBtn     = document.createElement('button');
+        retryBtn.className = 'btn-retry-email';
+        retryBtn.textContent = 'Retry';
+        retryBtn.onclick   = function() {
+          statusWrap.style.display = 'none';
+          actionWrap.style.display = '';
+          btn.disabled             = false;
+          btn.classList.remove('sending');
+          btnIcon.textContent      = '📧';
+          btnText.textContent      = 'Send Invoice to Email';
+        };
+        statusBadge.appendChild(retryBtn);
+      }
+    })
+    .catch(() => {
+      actionWrap.style.display = 'none';
+      statusWrap.style.display = '';
+      statusBadge.className    = 'email-status-badge error';
+      statusBadge.innerHTML    = '❌ Network error. <button class="btn-retry-email" onclick="location.reload()">Retry</button>';
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Cart — D-mart</title>
+  <link rel="stylesheet" href="/static/css/cart.css" />
+</head>
+<body>
+
+  <div class="page-bg">
+    <div class="card">
+
+      <div class="card-body">
+
+        <!-- Header -->
+        <div class="page-header">
+          <div class="header-left">
+            <a href="/scanner/{{ session_id }}" class="btn-back">← Continue Shopping</a>
+            <div class="header-title-group">
+              <span class="store-name">D-mart</span>
+              <h1 class="page-title">Your Cart</h1>
+            </div>
+          </div>
+          <span class="cart-count-label" id="cart-count-label">0 items</span>
+        </div>
+
+        <!-- Body grid -->
+        <div class="cart-grid">
+
+          <!-- LEFT: Cart Items -->
+          <div class="items-column">
+
+            <div class="cart-empty" id="cart-empty">
+              <div class="empty-icon">🛍️</div>
+              <p class="empty-title">Your cart is empty</p>
+              <p class="empty-sub">Go back and scan or search products to add them.</p>
+              <a href="/scanner/{{ session_id }}" class="btn-scan-more">← Start Scanning</a>
+            </div>
+
+            <div id="cart-items-list"></div>
+
+            <a href="/scanner/{{ session_id }}" class="btn-scan-more" id="btn-scan-more" style="display:none">
+              + Scan More Products
+            </a>
+
+          </div>
+
+          <!-- RIGHT: Summary + Coupon -->
+          <div class="summary-column" id="summary-column">
+
+            <!-- Coupon Section -->
+            <div class="coupon-card">
+              <div class="coupon-heading">
+                <span class="coupon-icon">🏷️</span>
+                <h3 class="coupon-title">Apply Coupon</h3>
+              </div>
+              <div class="coupon-input-row" id="coupon-input-row">
+                <input type="text" id="coupon-input" class="coupon-input"
+                  placeholder="Enter coupon code"
+                  oninput="this.value = this.value.toUpperCase()"
+                  autocomplete="off" />
+                <button class="btn-apply-coupon" onclick="applyCoupon()">Apply</button>
+              </div>
+              <div class="coupon-hint">Try: DMART10 · DMART50 · SAVE100 · WELCOME5</div>
+              <div class="coupon-success" id="coupon-success" style="display:none">
+                <span id="coupon-success-text"></span>
+                <button class="btn-remove-coupon" onclick="removeCoupon()">✕ Remove</button>
+              </div>
+              <div class="coupon-error" id="coupon-error" style="display:none"></div>
+            </div>
+
+            <!-- Bill Summary -->
+            <div class="bill-card">
+              <h3 class="bill-title">Bill Summary</h3>
+              <div class="items-count-line" id="bill-items-count">0 items in cart</div>
+
+              <div class="bill-row"><span>Subtotal (excl. GST)</span><span id="bill-subtotal">₹0.00</span></div>
+              <div class="bill-row"><span>GST @ 5%</span><span id="bill-gst">₹0.00</span></div>
+              <div class="bill-row discount-row" id="discount-row" style="display:none">
+                <span>Coupon Discount</span>
+                <span id="bill-discount" class="discount-amount">-₹0.00</span>
+              </div>
+              <div class="bill-divider"></div>
+              <div class="bill-row grand"><span>Total Payable</span><span id="bill-total">₹0.00</span></div>
+
+              <div class="savings-tag" id="savings-tag" style="display:none">
+                🎉 You save <strong id="savings-amount">₹0</strong> on this order!
+              </div>
+
+              <button class="btn-pay" onclick="goToCheckout()">
+                Proceed to Payment →
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      </div><!-- end card-body -->
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/static/js/cart.js"></script>
+  <script>initCart("{{ session_id }}");</script>
+</body>
+</html>

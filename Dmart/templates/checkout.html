@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checkout — D-mart</title>
+  <link rel="stylesheet" href="/static/css/checkout.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+<div class="page-bg">
+<div class="card">
+
+  <div class="card-inner">
+
+    <!-- Header -->
+    <div class="page-header">
+      <a href="/cart/{{ session_id }}" class="btn-back">← Back to Cart</a>
+      <div class="header-center">
+        <span class="store-name">D-mart</span>
+        <h1 class="page-title">Checkout</h1>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- Step indicators -->
+    <div class="steps-bar">
+      <div class="step active" id="step-ind-1"><span class="step-num">1</span><span class="step-label">Details</span></div>
+      <div class="step-line"></div>
+      <div class="step" id="step-ind-2"><span class="step-num">2</span><span class="step-label">Payment</span></div>
+      <div class="step-line"></div>
+      <div class="step" id="step-ind-3"><span class="step-num">3</span><span class="step-label">Invoice</span></div>
+    </div>
+
+    <!-- ── STEP 1: Customer Details ── -->
+    <div class="step-panel" id="step1">
+      <div class="checkout-grid">
+
+        <div class="form-card">
+          <h2 class="form-title">📋 Your Details</h2>
+          <p class="form-sub">Please fill in your details to generate your invoice.</p>
+
+          <div class="field-group">
+            <label class="field-label">Full Name <span class="req">*</span></label>
+            <input type="text" id="f-name" class="field-input" placeholder="e.g. Rahul Sharma" autocomplete="name"/>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Phone Number <span class="req">*</span></label>
+            <input type="tel" id="f-phone" class="field-input" placeholder="+91 98765 43210" autocomplete="tel" maxlength="13"/>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Email Address <span class="req">*</span></label>
+            <input type="email" id="f-email" class="field-input" placeholder="rahul@email.com" autocomplete="email"/>
+            <span class="field-hint">Invoice will be sent here after payment</span>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Address <span class="optional">(optional)</span></label>
+            <textarea id="f-address" class="field-input field-textarea" placeholder="House No, Street, City…" rows="2"></textarea>
+          </div>
+          <div class="field-error" id="field-error" style="display:none"></div>
+          <button class="btn-primary" onclick="submitDetails()">Continue to Payment →</button>
+        </div>
+
+        <!-- Order mini-summary -->
+        <div class="order-summary-card" id="order-summary">
+          <h3 class="summary-title">Order Summary</h3>
+          <div id="summary-items"></div>
+          <div class="summary-divider"></div>
+          <div class="summary-row"><span>Subtotal</span><span id="s-subtotal">₹0.00</span></div>
+          <div class="summary-row"><span>GST (5%)</span><span id="s-gst">₹0.00</span></div>
+          <div class="summary-row discount" id="s-discount-row" style="display:none">
+            <span>Discount</span><span id="s-discount">-₹0.00</span>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="summary-row grand"><span>Total Payable</span><span id="s-total">₹0.00</span></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── STEP 2: UPI Payment ── -->
+    <div class="step-panel" id="step2" style="display:none">
+      <div class="payment-wrap">
+        <div class="payment-card">
+          <h2 class="payment-title">📱 Scan & Pay via UPI</h2>
+          <p class="payment-sub">Scan the QR code below with any UPI app (GPay, PhonePe, Paytm)</p>
+
+          <div class="qr-amount-badge" id="qr-amount-badge">₹0.00</div>
+
+          <div class="qr-box">
+            <div id="upi-qr"></div>
+          </div>
+
+          <div class="upi-id-row">
+            <span class="upi-label">UPI ID:</span>
+            <span class="upi-val">{{ store.upi_id }}</span>
+          </div>
+
+          <div class="payment-note">
+            After completing payment in your UPI app, click the button below to confirm.
+          </div>
+
+          <button class="btn-primary" onclick="confirmPayment()">
+            ✅ I Have Completed the Payment
+          </button>
+          <button class="btn-ghost" onclick="cancelPayment()">
+            ✕ Cancel Payment
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STEP 3: Processing ── -->
+    <div class="step-panel" id="step3" style="display:none">
+      <div class="processing-wrap">
+        <div class="processing-icon">⏳</div>
+        <p class="processing-title">Generating Invoice…</p>
+        <p class="processing-sub">Please wait, your invoice is being prepared and will be sent to your email.</p>
+      </div>
+    </div>
+
+  </div><!-- end card-inner -->
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="/static/js/checkout.js"></script>
+<script>initCheckout("{{ session_id }}", "{{ store.upi_id }}");</script>
+</body>
+</html>

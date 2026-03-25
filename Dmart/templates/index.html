@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>D-mart Smart Checkout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/index.css" />
+</head>
+<body>
+
+  <div class="page-bg">
+
+    <!-- SVG background shapes -->
+    <div class="bg-shape bg-shape-1"></div>
+    <div class="bg-shape bg-shape-2"></div>
+    <div class="bg-shape bg-shape-3"></div>
+    <div class="bg-shape bg-shape-4"></div>
+
+    <!-- Floating dots -->
+    <div class="particles" aria-hidden="true">
+      <span class="particle p1"></span>
+      <span class="particle p2"></span>
+      <span class="particle p3"></span>
+      <span class="particle p4"></span>
+      <span class="particle p5"></span>
+    </div>
+
+    <div class="card">
+
+      <!-- Colourful top bar -->
+      <div class="card-topbar"></div>
+
+      <div class="card-inner">
+
+        <!-- Brand strip -->
+        <div class="brand-strip">
+          <div class="brand-logo">
+            <div class="brand-logo-mark">🛒</div>
+            <span class="brand-logo-text">D·mart</span>
+          </div>
+          <div class="live-badge">
+            <span class="live-dot"></span>
+            Live Session
+          </div>
+        </div>
+
+        <!-- Hero -->
+        <div class="hero-section">
+          <div class="hero-icon-wrap">
+            <div class="hero-icon-bg"></div>
+            <span class="hero-icon">🛍️</span>
+            <div class="pulse-ring r1"></div>
+            <div class="pulse-ring r2"></div>
+          </div>
+
+          <p class="hero-tagline">Ready. Set. Shop.</p>
+          <h1 class="hero-headline">Smart <em>Shopping</em><br/>Starts Here</h1>
+          <p class="store-address">{{ store.address }}</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+          <div class="stat-item">
+            <span class="stat-icon">⚡</span>
+            <span class="stat-label">Instant Scan</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-icon">🧾</span>
+            <span class="stat-label">Live Total</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-icon">🚀</span>
+            <span class="stat-label">Skip Queue</span>
+          </div>
+        </div>
+
+        <!-- Info -->
+        <div class="info-card">
+          <span class="info-icon">✦</span>
+          <p class="info-card-text">Your smart checkout session is ready. Scan products as you shop and pay in seconds — no waiting in line.</p>
+        </div>
+
+        <!-- CTA — id & href UNCHANGED -->
+        <a id="start-btn" href="{{ url_for('scanner', session_id=session_id) }}" class="btn-start">
+          <span class="btn-text">Start Shopping</span>
+          <span class="btn-arrow">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </a>
+
+        <p class="or-text">or click above to start on this device</p>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/index.js"></script>
+  <script>
+    initPage("{{ session_id }}");
+  </script>
+
+</body>
+</html>
