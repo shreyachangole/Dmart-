@@ -5,7 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from datetime import datetime
-from pdf_invoice import generate_invoice_pdf
+from Dmart.pdf_invoice import generate_invoice_pdf
 
 
 app = Flask(__name__)
