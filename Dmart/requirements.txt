@@ -1,3 +1,4 @@
 flask
 secure-smtplib
 reportlab
+gunicorn
